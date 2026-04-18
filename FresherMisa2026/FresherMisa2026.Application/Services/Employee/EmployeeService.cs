@@ -21,6 +21,49 @@ namespace FresherMisa2026.Application.Services
             _employeeRepository = employeeRepository;
         }
 
+        public async Task<IEnumerable<Employee>> FilterEmployeesAsync(Guid? departmentId,Guid? positionId,decimal? salaryFrom,decimal? salaryTo,int? gender,DateTime? hireDateFrom,DateTime? hireDateTo)
+        {
+            var errors = new List<string>();
+
+            // 1. Kiểm tra khoảng lương
+            if (salaryFrom.HasValue && salaryTo.HasValue && salaryFrom > salaryTo)
+            {
+                errors.Add("salaryFrom không được lớn hơn salaryTo");
+            }
+
+            // 2. Kiểm tra khoảng ngày vào làm
+            if (hireDateFrom.HasValue && hireDateTo.HasValue && hireDateFrom > hireDateTo)
+            {
+                errors.Add("hireDateFrom không được lớn hơn hireDateTo");
+            }
+
+            // 3. Kiểm tra giá trị giới tính
+            if (gender.HasValue && (gender < 0 || gender > 2))
+            {
+                errors.Add("Giới tính phải là 0 (Nam), 1 (Nữ), hoặc 2 (Khác)");
+            }
+
+            // Nếu có lỗi thì throw exception
+            if (errors.Any())
+            {
+                throw new ArgumentException(string.Join("; ", errors));
+            }
+
+            // 4. Gọi xuống repository để lấy dữ liệu
+            var employees = await _employeeRepository.FilterEmployees(
+                departmentId,
+                positionId,
+                salaryFrom,
+                salaryTo,
+                gender,
+                hireDateFrom,
+                hireDateTo
+            );
+
+            return employees;
+        }
+
+
         public async Task<Employee> GetEmployeeByCodeAsync(string code)
         {
             var employee = await _employeeRepository.GetEmployeeByCode(code);
