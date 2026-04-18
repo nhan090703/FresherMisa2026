@@ -2,6 +2,7 @@
 using FresherMisa2026.Application.Extensions;
 using FresherMisa2026.Application.Interfaces.Repositories;
 using FresherMisa2026.Entities.Department;
+using FresherMisa2026.Entities.Employee;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,25 @@ namespace FresherMisa2026.Infrastructure.Repositories
         }
 
         /// <summary>
+        /// Đếm số nhân viên trong phòng ban theo mã
+        /// </summary>
+        public async Task<int> CountEmployeesByDepartmentCode(string departmentCode)
+        {
+            string query = SQLExtension.GetQuery("Department.CountEmployeesByCode");
+            var param = new Dictionary<string, object>
+            {
+                { "@DepartmentCode", departmentCode }
+            };
+
+            return await _dbConnection.ExecuteScalarAsync<int>(
+                query,
+                param,
+                commandType: System.Data.CommandType.Text
+            );
+        }
+
+
+        /// <summary>
         /// Lấy department theo code
         /// </summary>
         /// <param name="code">Mã department</param>
@@ -35,6 +55,25 @@ namespace FresherMisa2026.Infrastructure.Repositories
             };
             return await _dbConnection.QueryFirstOrDefaultAsync<Department>(query, @param, commandType: System.Data.CommandType.Text);
         }
+
+        /// <summary>
+        /// Lấy danh sách nhân viên theo mã phòng ban
+        /// </summary>
+        public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentCode(string departmentCode)
+        {
+            string query = SQLExtension.GetQuery("Department.GetEmployeesByCode");
+            var param = new Dictionary<string, object>
+            {
+                { "@DepartmentCode", departmentCode }
+            };
+
+            return await _dbConnection.QueryAsync<Employee>(
+                query,
+                param,
+                commandType: System.Data.CommandType.Text
+            );
+        }
+
 
         /// <summary>
         /// Kiểm tra phòng ban có tồn tại nhân viên hay không

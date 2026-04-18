@@ -3,6 +3,7 @@ using FresherMisa2026.Application.Interfaces.Repositories;
 using FresherMisa2026.Application.Interfaces.Services;
 using FresherMisa2026.Entities;
 using FresherMisa2026.Entities.Department;
+using FresherMisa2026.Entities.Employee;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,32 @@ namespace FresherMisa2026.Application.Services
         }
 
         /// <summary>
+        /// Lấy danh sach employee theo ma phong
+        /// </summary>
+        /// <returns></returns>
+        /// Created By: nptnhan (18/04/2026)
+        public async Task<int> CountEmployeesByDepartmentCodeAsync(string departmentCode)
+        {
+            if (string.IsNullOrWhiteSpace(departmentCode))
+            {
+                throw new ArgumentException("Mã phòng ban không được để trống");
+            }
+
+            // Kiểm tra phòng ban có tồn tại không
+            var department = await _deptRepository.GetDepartmentByCode(departmentCode);
+            if (department == null)
+            {
+                throw new Exception("Không tìm thấy phòng ban với mã đã nhập");
+            }
+
+            // Đếm số nhân viên trong phòng ban
+            var count = await _deptRepository.CountEmployeesByDepartmentCode(departmentCode);
+
+            return count;
+        }
+
+        
+        /// <summary>
         /// Lấy department theo code
         /// </summary>
         /// <returns></returns>
@@ -34,6 +61,38 @@ namespace FresherMisa2026.Application.Services
 
             return department;
         }
+
+        /// <summary>
+        /// Dem so  employee theo ma phong
+        /// </summary>
+        /// <returns></returns>
+        /// Created By: nptnhan (18/04/2026)
+        public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentCodeAsync(string departmentCode)
+        {
+            if (string.IsNullOrWhiteSpace(departmentCode))
+            {
+                throw new ArgumentException("Mã phòng ban không được để trống");
+            }
+
+            // Kiểm tra phòng ban có tồn tại không
+            var department = await _deptRepository.GetDepartmentByCode(departmentCode);
+            if (department == null)
+            {
+                throw new Exception("Không tìm thấy phòng ban với mã đã nhập");
+            }
+
+            // Lấy danh sách nhân viên trong phòng ban
+            var employees = await _deptRepository.GetEmployeesByDepartmentCode(departmentCode);
+
+            // Nếu không có nhân viên thì trả về danh sách rỗng
+            if (employees == null || !employees.Any())
+            {
+                return new List<Employee>();
+            }
+
+            return employees;
+        }
+        
 
         #region OVERRIDE METHODS
         protected override async Task<bool> ValidateBeforeDeleteAsync(Guid entityId)
