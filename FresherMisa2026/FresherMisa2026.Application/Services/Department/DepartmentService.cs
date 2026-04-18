@@ -52,7 +52,7 @@ namespace FresherMisa2026.Application.Services
         /// <summary>
         /// Validate tùy chỉnh cho Department
         /// </summary>
-        protected override List<ValidationError> ValidateCustom(Department department)
+        protected override async Task<List<ValidationError>> ValidateCustom(Department department)
         {
             var errors = new List<ValidationError>();
 
