@@ -35,5 +35,23 @@ namespace FresherMisa2026.Infrastructure.Repositories
             };
             return await _dbConnection.QueryFirstOrDefaultAsync<Department>(query, @param, commandType: System.Data.CommandType.Text);
         }
+
+        /// <summary>
+        /// Kiểm tra phòng ban có tồn tại nhân viên hay không
+        /// </summary>
+        /// <param name="departmentId">ID phòng ban cần kiểm tra</param>
+        /// <returns>
+        /// True nếu tồn tại nhân viên, ngược lại False
+        /// </returns>
+        /// Created By: nptnhan (18/04/2026)
+        public async Task<bool> HasEmployeeAsync(Guid DepartmentId)
+        {
+            string query = SQLExtension.GetQuery("Employee.HasByDepartmentId");
+            var param = new Dictionary<string, object>
+                {
+                    { "@DepartmentID", DepartmentId }
+                };
+            return await _dbConnection.ExecuteScalarAsync<bool>(query, param, commandType: System.Data.CommandType.Text);
+         }
     }
 }

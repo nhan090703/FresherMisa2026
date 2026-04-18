@@ -13,5 +13,6 @@ namespace FresherMisa2026.Application.Interfaces.Repositories
         /// <param name="code"></param>
         /// <returns></returns>
         Task<Department> GetDepartmentByCode(string code);
+        Task<bool> HasEmployeeAsync(Guid DepartmentId);
     }
 }

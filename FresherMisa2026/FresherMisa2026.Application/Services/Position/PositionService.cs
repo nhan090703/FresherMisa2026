@@ -20,6 +20,18 @@ namespace FresherMisa2026.Application.Services
             _positionRepository = positionRepository;
         }
 
+        protected override async Task<bool> ValidateBeforeDeleteAsync(Guid entityId)
+        {
+            //1. Validate còn nhân viên trong phòng ban không
+            var hasEmployee = await _positionRepository.HasEmployeeAsync(entityId);
+            if (hasEmployee)
+            {
+                throw new Exception("Không thể xóa vị trí vì đã có nhân viên");
+            }
+
+            // 3. Cho phép xóa
+            return true;
+        }
         public async Task<Position> GetPositionByCodeAsync(string code)
         {
             var position = await _positionRepository.GetPositionByCode(code);
